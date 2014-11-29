@@ -10,8 +10,8 @@
 
 
 # Configuration.
-USERNAME="user"
-GWPASSWD="secret123"
+USERNAME="johndoe"
+GWPASSWD="foobar"
 
 
 die () {
@@ -37,8 +37,7 @@ then
   echo $2 | grep -E -q '^[0-9]+$' || die "receiver: numeric argument required."
   HASH=`echo -n "$USERNAME|$GWPASSWD|expert|$1|$2|$3|" | md5sum - | cut -c 1-32`
   MESSAGE=`urlencode "$3"`
-  curl --ipv4 --socks5-hostname 127.0.0.1:9050 --get "https://gateway.sms-expert.de/send/?user=$USERNAME&type=expert&sender=$1&receiver=$2&message=$MESSAGE&hash=$HASH"
-
+  curl --silent --ipv4 --socks5-hostname 127.0.0.1:9050 --get "https://gateway.sms-expert.de/send/?user=$USERNAME&type=expert&sender=$1&receiver=$2&message=$MESSAGE&hash=$HASH" | sed -n 's:.*<statusText>\(.*\)</statusText>.*:\1:p'
 else
   echo -e "\e[1m\e[32mT\e[0morified \e[1m\e[32mM\e[0message \e[1m\e[32mS\e[0mervice"
   echo
